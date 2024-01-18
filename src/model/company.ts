@@ -7,16 +7,13 @@ const schema = new Schema({
         type: 'String',
         require: true
     },
-    site:[{
-        name: {
-            type: 'String',
-            require: true,
-        },
-        siteId: {
-            type: 'String',
-            unique: true,
-        }
-    }]
+    email: {
+        type: 'String',
+        unique: true,
+    },
+    password: {
+        type: 'String',
+    }
 })
 
 const Company = mongoose.model('Company', schema);

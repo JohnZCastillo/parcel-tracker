@@ -1,0 +1,20 @@
+{% extends "index.twig" %}
+
+
+{% block body %}
+
+	<form method="POST" action="/" class="card w-96">
+
+		<h1 class="text-5xl font-semibold mb-2" style="color: #88D176">
+
+			Parcel Tracking
+		</h1>
+
+		<label for="trackingNumber">Tracking Number</label>
+		<input class="input" id="trackingNumber" name="trackingNumber" type="text" required>
+
+		<div class="mt-2">
+			<button class="btn btn-primary" type='submit'>Track</button>
+		</div>
+	</form>
+{% endblock %}

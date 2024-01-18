@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "nodemonConfig": {
-    "watch": [ "./"],
+    "watch": [
+      "./"
+    ],
     "ext": "twig, json, ts"
   },
   "scripts": {
@@ -18,6 +20,7 @@
     "body-parser": "^1.20.2",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "express-session": "^1.17.3",
     "mongoose": "^8.1.0",
     "twig": "^1.17.1"
   },
