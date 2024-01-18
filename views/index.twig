@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Hello World</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet" type="text/css"/>
+	
+		<link href="/static/css/car.css" rel="stylesheet" type="text/css"/>
+
+
+		<style>
+
+			.blob {
+				background-image: url('/static/images/blob.png');
+				background-repeat: no-repeat;
+				background-position: center;
+				background-size: cover;
+			}
+
+			.h-screen {
+				height: calc(100vh - 64px) !important;
+			}
+		</style>
+	</head>
+	<body>
+
+
+		<div class='container-xl blob'>
+
+			<div class="navbar">
+				<a class="btn btn-ghost text-xl">Castillo Parcel Tracker</a>
+			</div>
+
+			<section class="grid grid-cols-[1fr,2fr] h-screen">
+
+
+				<div class="flex items-end justify-center">
+					<img src='/static/images/hero.png'>
+				</div>
+
+				<div class="flex items-center justify-center">
+
+
+					<div class="container">
+						<div class="car-wrapper">
+							<div class="car-wrapper_inner">
+
+								<div class="car_outter">
+									<div class="car">
+										<div class="body">
+											<div></div>
+										</div>
+										<div class="decos">
+											<div class="line-bot"></div>
+											<div class="door">
+												<div class="handle"></div>
+												<div class="bottom"></div>
+											</div>
+											<div class="window"></div>
+											<div class="light"></div>
+											<div class="light-front"></div>
+											<div class="ice-cream">
+												<img src="/static/images/box.png">
+											</div>
+										</div>
+										<div>
+											<div class="wheel"></div>
+											<div class="wheel"></div>
+										</div>
+										<div class="wind">
+											<div class="p p1"></div>
+											<div class="p p2"></div>
+											<div class="p p3"></div>
+											<div class="p p4"></div>
+											<div class="p p5"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+
+					<form method="POST" action="/" class="card w-96">
+
+						<h1 class="text-3xl font-bold" style="color: #88D176">
+							Parcel Tracking
+						</h1>
+
+						<label for="trackingNumber">Tracking Number</label>
+						<input class="input" id="trackingNumber" name="trackingNumber" type="text" required>
+
+						<div class="mt-2">
+							<button class="btn btn-primary" type='submit'>Track</button>
+						</div>
+					</form>
+				</div>
+			</section>
+
+		</div>
+
+	</body>
+</html>
