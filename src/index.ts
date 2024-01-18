@@ -20,15 +20,21 @@ app.get('/',(req: Request, res: Response)=>{
     res.render('index.twig',{});
 })
 
+app.get('/admin',(req: Request, res: Response)=>{
+    res.render('admin.twig',{});
+})
+
 app.post('/', async (req: Request, res: Response)=>{
 
-    let company = new Company({
-        name: '234'
-    });
+    // let company = new Company({
+    //     name: '234'
+    // });
 
-    await company.save();
+    // await company.save();
 
-    res.json({'message': 'hello world'})
+    // res.json({'message': 'hello world'})
+
+    res.redirect('/admin');
 })
 
 mongoose.connect(process.env.MONGO_DB)
