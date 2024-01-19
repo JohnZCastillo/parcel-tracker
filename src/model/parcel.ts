@@ -6,6 +6,8 @@ const schema = new Schema({
   reference: {
     type: "String",
     require: true,
+    unique: true
+
   },
   history: [
     {
@@ -23,4 +25,4 @@ const schema = new Schema({
 
 const Parcel = mongoose.model('Parcel', schema);
 
-module.exports = Parcel;
+export {Parcel};
