@@ -6,14 +6,41 @@ import { Parcel } from "./model/parcel";
 import "dotenv/config";
 import path from "path";
 import session from "express-session";
-import auth from './lib/middleware/auth';
-
+import passport from "passport";
+import LocalStrategy from "passport-local";
+import auth from "./lib/middleware/auth";
 const app: Express = express();
 
 const port = 8000;
 
-app.use(bodyParser.json()); // for parsing application/json
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+passport.use(
+  new LocalStrategy((username, password, done) => {
+    Company.findOne({ email: username, password: password })
+      .then((company) => {
+        return done(null, company);
+      })
+      .catch((err) => {
+        return done(err, false);
+      });
+  })
+);
+
+passport.serializeUser(function (user, done) {
+  return done(null, user._id.toString());
+});
+
+passport.deserializeUser(function (id, done) {
+  Company.findById(id)
+    .then((company) => {
+      return done(null, company);
+    })
+    .catch((err) => {
+      return done(err);
+    });
+});
 
 app.set("view engine", "twig");
 
@@ -22,101 +49,31 @@ app.use("/static", express.static(path.join(__dirname, "/../public")));
 app.use(
   session({
     secret: "my-secret",
-    resave: true, 
+    rolling: true,
+    resave: true,
     saveUninitialized: false,
+    cookie: { maxAge: (60000 * 60) },
   })
 );
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.get("/login", (req: Request, res: Response) => {
-
-  console.log(req.session);
-
   res.render("pages/login.twig", {});
 });
 
-app.post("/login", (req: Request, res: Response) => {
-
-  Company.findOne({"email": req.body.email, "password": req.body.password})
-  .then(company => {
-   
-    req.session.loginId = company._id.toString();
-
-    res.json('hello world')
-
-  }).catch(err =>{
-    res.redirect('/login');
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    successRedirect: "/",
   })
-
-});
-
-app.post("/track", (req: Request, res: Response) => {
-
-  Parcel.findOne({"reference": req.body.reference})
-  .then( (parcel)  => {
-   
-    parcel.history.push({
-      location: 'hello',
-      date: Date(),
-    })
-
-    parcel.save();
-
-    res.redirect('/admin');
-
-  }).catch(err =>{
-    res.redirect('/login');
-  })
-
-});
-
-
-app.get("/track", (req: Request, res: Response) => {
-
-  Parcel.findOne({"reference": req.query.reference})
-  .then( (parcel)  => {
-   
-    res.render('pages/track.twig', parcel);
-
-  }).catch(err =>{
-    res.redirect('/login');
-  })
-
-});
-
-
-app.post("/item", (req: Request, res: Response) => {
-
-  let parcel = new Parcel(req.body);
-
-  parcel.save()
-  .then(parcel => {
-
-    res.json({message: "ok"});
-
-  }).catch(err => {
-    res.json({message: "not ok"});
-  })
-
-});
-
-
-// app.use(auth);
-
-app.get("/", (req: Request, res: Response) => {
-
-
-  console.log(req.session);
-
-  res.render("pages/track.twig", {});
-});
+);
 
 app.get("/register", (req: Request, res: Response) => {
-
-    console.log(req.session);
-    res.render("pages/register.twig", {});
+  res.render("pages/register.twig", {});
 });
-
-
 
 app.post("/register", (req: Request, res: Response) => {
 
@@ -134,24 +91,61 @@ app.post("/register", (req: Request, res: Response) => {
     });
 });
 
-app.post("/login", (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
   res.render("pages/track.twig", {});
 });
 
-app.get("/admin", (req: Request, res: Response) => {
-  res.render("admin.twig", {});
+app.get("/track", (req: Request, res: Response) => {
+  Parcel.findOne({ reference: req.query.reference })
+    .then((parcel) => {
+      res.render("pages/track.twig", parcel);
+    })
+    .catch((err) => {
+      res.redirect("/login");
+    });
 });
 
-app.post("/", async (req: Request, res: Response) => {
-  // let company = new Company({
-  //     name: '234'
-  // });
+app.use(auth);
 
-  // await company.save();
+app.post("/track", (req: Request, res: Response) => {
+  Parcel.findOne({ reference: req.body.reference })
+    .then((parcel) => {
+      parcel.history.push({
+        location: "hello",
+        date: Date(),
+      });
 
-  // res.json({'message': 'hello world'})
+      parcel.save();
 
-  res.redirect("/admin");
+      res.redirect("/admin");
+    })
+    .catch((err) => {
+      res.redirect("/login");
+    });
+});
+
+app.post("/item", (req: Request, res: Response) => {
+  
+  let parcel = new Parcel(req.body);
+
+  parcel.history.push({
+    location: req.session.loginCompany,
+    date: Date(),
+  });
+
+  parcel
+    .save()
+    .then((parcel) => {
+      res.json({ message: "ok" });
+    })
+    .catch((err) => {
+      res.json({ message: "not ok" });
+    });
+});
+
+
+app.get("/admin", (req: Request, res: Response) => {
+  res.render("admin.twig", {});
 });
 
 mongoose.connect(process.env.MONGO_DB).then(() => console.log("Connected!"));

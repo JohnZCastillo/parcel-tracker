@@ -1,15 +1,9 @@
+const auth = (req, res, next) => {
+  if (!req.isAuthenticated()) {
+    return res.redirect("/login");
+  }
 
-const auth = (req , res , next) => {
-
-    if(!req.session.loginId){
-
-        res.redirect('/login');
-
-        return;
-    }
-
-    next();
-
-}
+  next();
+};
 
 export = auth;

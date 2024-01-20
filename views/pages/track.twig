@@ -13,31 +13,34 @@
 		<label for="trackingNumber">Reference</label>
 		<input class="input" id="reference" name="reference" type="text" required>
 
-		<div class="mt-2">
+		<div class="mt-2 mb-3">
 			<button class="btn btn-primary" type='submit'>Track</button>
 		</div>
 
-		<ol class="relative border-l border-gray-200 dark:border-gray-700">
+		{% if reference is empty %}
+			<h4>Parcel Not Found</h4>
+		{% else %}
+			<ol class="relative border-l border-gray-200 dark:border-gray-700">
 
-			{% for data in history %}
-				<li class="mb-10 ml-4">
-					<div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-800 dark:bg-gray-700"></div>
-					<time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{{data.date|date('M d, Y') }}</time>
-					<div>
+				{% for data in history %}
+					<li class="mb-10 ml-4">
+						<div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-800 dark:bg-gray-700"></div>
+						<time class="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{{data.date|date('M d, Y') }}</time>
+						<div>
 
-						<span class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
+							<span class="mb-4 text-base font-normal text-gray-500 dark:text-gray-400">
 
-							Arrived At
-						</span>
+								Arrived At
+							</span>
 
-						<span class="text-lg font-semibold text-gray-900 dark:text-white">{{data.location}}</span>
+							<span class="text-lg font-semibold text-gray-900 dark:text-white">{{data.location}}</span>
 
-					</div>
+						</div>
 
-				</li>
-			{% endfor %}
-		</ol>
-
+					</li>
+				{% endfor %}
+			</ol>
+		{% endif %}
 
 	</form>
 {% endblock %}
