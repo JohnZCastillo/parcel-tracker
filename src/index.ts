@@ -105,7 +105,7 @@ app.get("/track", (req: Request, res: Response) => {
     });
 });
 
-app.use(auth);
+// app.use(auth);
 
 app.post("/track", (req: Request, res: Response) => {
   Parcel.findOne({ reference: req.body.reference })
