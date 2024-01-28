@@ -1,8 +1,8 @@
 import express, { Express, Request, Response } from "express";
 import bodyParser from "body-parser";
-import mongoose, { Model, Mongoose } from "mongoose";
+import mongoose, { Model, Mongoose, Query } from "mongoose";
 import { Company } from "./model/company";
-import { Parcel } from "./model/parcel";
+import Parcel from "./model/parcel";
 import "dotenv/config";
 import path from "path";
 import session from "express-session";
@@ -52,7 +52,7 @@ app.use(
     rolling: true,
     resave: true,
     saveUninitialized: false,
-    cookie: { maxAge: (60000 * 60) },
+    cookie: { maxAge: 60000 * 60 },
   })
 );
 
@@ -67,7 +67,7 @@ app.post(
   "/login",
   passport.authenticate("local", {
     failureRedirect: "/login",
-    successRedirect: "/",
+    successRedirect: "/admin",
   })
 );
 
@@ -76,7 +76,6 @@ app.get("/register", (req: Request, res: Response) => {
 });
 
 app.post("/register", (req: Request, res: Response) => {
-
   let company = new Company(req.body);
 
   company
@@ -85,9 +84,7 @@ app.post("/register", (req: Request, res: Response) => {
       res.redirect("/admin");
     })
     .catch((err) => {
-      console.log(err.message);
-
-      res.redirect("/admin");
+      res.redirect("/register");
     });
 });
 
@@ -95,17 +92,23 @@ app.get("/", (req: Request, res: Response) => {
   res.render("pages/track.twig", {});
 });
 
-app.get("/track", (req: Request, res: Response) => {
-  Parcel.findOne({ reference: req.query.reference })
-    .then((parcel) => {
-      res.render("pages/track.twig", parcel);
-    })
-    .catch((err) => {
-      res.redirect("/login");
-    });
-});
+app.get("/track", async (req: Request, res: Response) => {
+  try {
+    if (!req.query.reference) {
+      return res.render("pages/track.twig", {});
+    }
 
-// app.use(auth);
+    let parcel = await Parcel.findOne({ reference: req.query.reference });
+
+    if (!parcel) {
+      throw new Error("Parcel not found");
+    }
+
+    res.render("pages/track.twig", parcel);
+  } catch (error) {
+    res.render("pages/track.twig", { error: "Parcel Not Found" });
+  }
+});
 
 app.post("/track", (req: Request, res: Response) => {
   Parcel.findOne({ reference: req.body.reference })
@@ -124,8 +127,18 @@ app.post("/track", (req: Request, res: Response) => {
     });
 });
 
+// app.use(auth);
+
+app.post("/logout", (req, res,next) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/login");
+  });
+});
+
 app.post("/item", (req: Request, res: Response) => {
-  
   let parcel = new Parcel(req.body);
 
   parcel.history.push({
@@ -142,7 +155,6 @@ app.post("/item", (req: Request, res: Response) => {
       res.json({ message: "not ok" });
     });
 });
-
 
 app.get("/admin", (req: Request, res: Response) => {
   res.render("admin.twig", {});

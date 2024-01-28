@@ -25,4 +25,4 @@ const schema = new Schema({
 
 const Parcel = mongoose.model('Parcel', schema);
 
-export {Parcel};
+export default Parcel;

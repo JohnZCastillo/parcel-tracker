@@ -11,16 +11,19 @@
 		</h1>
 
 		<label for="trackingNumber">Reference</label>
-		<input class="input" id="reference" name="reference" type="text" required>
+		<input value="{{reference}}" class="input" id="reference" name="reference" type="text" required>
 
 		<div class="mt-2 mb-3">
-			<button class="btn btn-primary" type='submit'>Track</button>
+			<button class="btn btn-primary">Track</button>
 		</div>
 
-		{% if reference is empty %}
-			<h4>Parcel Not Found</h4>
+
+		{% if error is not empty %}
+			<h4 class='text-red-50'>Parcel Not Found</h4>
 		{% else %}
-			<ol class="relative border-l border-gray-200 dark:border-gray-700">
+
+		<div class='overflow-y-auto' style='max-height: 200px'>
+		<ol class="relative border-l border-gray-200 dark:border-gray-700">
 
 				{% for data in history %}
 					<li class="mb-10 ml-4">
@@ -40,6 +43,9 @@
 					</li>
 				{% endfor %}
 			</ol>
+		</div>
+
+			
 		{% endif %}
 
 	</form>

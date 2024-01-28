@@ -5,9 +5,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Hello World</title>
 		<script src="https://cdn.tailwindcss.com"></script>
-		<link href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet" type="text/css"/>
+		<link
+		href="https://cdn.jsdelivr.net/npm/daisyui@4.6.0/dist/full.min.css" rel="stylesheet" type="text/css"/>
 
-		<link href="/static/css/car.css" rel="stylesheet" type="text/css"/>
+		{# <link href="/static/css/car.css" rel="stylesheet" type="text/css"/> #}
 
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,82 +26,38 @@
 				background-size: cover;
 			}
 
-			.h-screen {
-				height: calc(100vh - 64px) !important;
+			.link-text{
+				color: #07111D;
 			}
 		</style>
 	</head>
 	<body>
 
 
+
 		<div class='container-xl blob'>
 
 			<div class="navbar">
-				<a class="btn btn-ghost text-xl">Castillo Parcel Tracker</a>
+				<a href='/' class="btn btn-ghost text-md lg:text-xl">Castillo Parcel Tracker</a>
+				<nav class='ml-2 flex gap-2'>
+					<a  href="/login"> Login </a>
+					<a href="/register"> Register</a>
+				</nav>
 			</div>
 
-			<section class="grid grid-cols-[1fr,2fr] h-screen">
+			<section class="px-4 md:px-0 lg:grid lg:grid-cols-[1fr,2fr] lg:h-[calc(100vh-65px)]">
 
 
 				<div class="flex items-end justify-center">
 					<img src='/static/images/hero.png'>
 				</div>
 
-				<div class="flex items-center justify-center">
+				<div class="flex items-center justify-center"> {% block body %}{% endblock %}
+					</div>
+				</section>
 
+			</div>
 
-					{# <div class="container">
-																										<div class="car-wrapper">
-																											<div class="car-wrapper_inner">
-																				
-																												<div class="car_outter">
-																													<div class="car flex">
-																														<img src='/static/images/track.png'>
-																														<div class="wind">
-																															<div class="p p1"></div>
-																															<div class="p p2"></div>
-																															<div class="p p3"></div>
-																															<div class="p p4"></div>
-																															<div class="p p5"></div>
-																														</div>
-																													</div>
-																												</div>
-																											</div>
-																				
-																										</div>
-																									</div> #}
-
-					{# <div class="car flex">
-																					<img src='/static/images/track.png'>
-																					<div class="wind">
-																						<div class="p p1"></div>
-																						<div class="p p2"></div>
-																						<div class="p p3"></div>
-																						<div class="p p4"></div>
-																						<div class="p p5"></div>
-																					</div>
-																				</div> #}
-																				
-																				{% block body %}
-						{# Generated Content Here #}
-					{% endblock %}
-					{# <form method="POST" action="/" class="card w-96"> 
-											
-											<h1 class="text-5xl font-semibold mb-2" style="color: #88D176">
-					
-													Parcel Tracking
-												</h1>
-					
-												<label for="trackingNumber">Tracking Number</label>
-												<input class="input" id="trackingNumber" name="trackingNumber" type="text" required>
-					
-												<div class="mt-2">
-													<button class="btn btn-primary" type='submit'>Track</button>
-												</div>
-											</form> #}
-				</div>
-			</section>
-
-		</div>
-	</body>
-</html></body></html>
+		</body>
+	</html>
+</html
