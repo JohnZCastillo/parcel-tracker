@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { Parcel } from "../model/parcel";
+import Parcel  from "../model/parcel";
 const router = new Router();
 
 router
