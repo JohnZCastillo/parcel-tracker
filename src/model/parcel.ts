@@ -26,6 +26,9 @@ const schema = new Schema({
   },
   updatedAt: {
     type: Date,
+  },
+  updatedBy: {
+    type: "String",
   }
 });
 

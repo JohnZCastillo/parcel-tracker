@@ -28,9 +28,15 @@ npm start
 
 ## Usage
 
+User
 1. Open the application in your browser.
 2. Input your parcel tracking number in the designated field.
 3. Click the "Track" button to retrieve the latest status of your parcel.
+
+Admin
+1. Open the application in your browser.
+2. Register through the form.
+3. Enter the tracking number to input field
 
 ## License
 

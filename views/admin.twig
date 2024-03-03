@@ -74,10 +74,11 @@
 
 						<form class="my-3" method="POST" action="/track">
 
-							<div>
-								<input placeholder='Scan Reference' class="input input-bordered w-full max-w-md" type="text" name="reference"/>
+							<div class='grid grid-rows-3 '>
+								<label class='m-0'>Tracking Number</label>
+								<input placeholder='Enter tracking number' class="input input-bordered w-full max-w-md" type="text" name="reference"/>
+								<small class='text-xs text-gray-600 mt-2'>An item is created if the tracking number does not exist</small>
 							</div>
-
 						</form>
 
 

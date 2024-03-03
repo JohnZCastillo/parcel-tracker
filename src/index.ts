@@ -128,6 +128,7 @@ app.post("/track", (req: Request, res: Response) => {
 
       parcel.updatedAt = new Date();
 
+      parcel.updatedBy = req.session.passport.user._id,
       parcel.save();
 
       res.redirect("/admin");
@@ -140,6 +141,7 @@ app.post("/track", (req: Request, res: Response) => {
         date: new Date(),
       });
 
+      parcel.updatedBy = req.session.passport.user._id,
       parcel.updatedAt = new Date();
 
       parcel
@@ -168,7 +170,7 @@ app.get("/admin", async (req: Request, res: Response) => {
   let parcels = [];
 
   try {
-    parcels = await Parcel.find().sort({ updatedAt: -1 }).limit(10);
+    parcels = await Parcel.find({'updatedBy': req.session.passport.user._id}).sort({ updatedAt: -1 }).limit(10);
   } catch {
     // add error here
   }
