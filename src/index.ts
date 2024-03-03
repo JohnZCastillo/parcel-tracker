@@ -29,11 +29,11 @@ passport.use(
 );
 
 passport.serializeUser(function (user, done) {
-  return done(null, user._id.toString());
+  return done(null, user);
 });
 
 passport.deserializeUser(function (id, done) {
-  Company.findById(id)
+  Company.findById(id._id.toString())
     .then((company) => {
       return done(null, company);
     })
@@ -76,11 +76,12 @@ app.get("/register", (req: Request, res: Response) => {
 });
 
 app.post("/register", (req: Request, res: Response) => {
+
   let company = new Company(req.body);
 
   company
     .save()
-    .then((compnay) => {
+    .then((company) => {
       res.redirect("/admin");
     })
     .catch((err) => {
@@ -111,19 +112,38 @@ app.get("/track", async (req: Request, res: Response) => {
 });
 
 app.post("/track", (req: Request, res: Response) => {
+  
   Parcel.findOne({ reference: req.body.reference })
     .then((parcel) => {
       parcel.history.push({
-        location: "hello",
-        date: Date(),
+        location:  req.session.passport.user.name,
+        date: new Date(),
       });
+
+      parcel.updatedAt = new Date();
 
       parcel.save();
 
       res.redirect("/admin");
     })
     .catch((err) => {
-      res.redirect("/login");
+      let parcel = new Parcel(req.body);
+
+      parcel.history.push({
+        location:  req.session.passport.user.name,
+        date: new Date(),
+      });
+    
+      parcel.updatedAt = new Date();
+
+      parcel
+        .save()
+        .then((parcel) => {
+          res.redirect("/admin");
+        })
+        .catch((err) => {
+          res.redirect("/admin");
+        });
     });
 });
 
@@ -138,27 +158,26 @@ app.post("/logout", (req, res,next) => {
   });
 });
 
-app.post("/item", (req: Request, res: Response) => {
-  let parcel = new Parcel(req.body);
 
-  parcel.history.push({
-    location: req.session.loginCompany,
-    date: Date(),
-  });
+app.get("/admin", async (req: Request, res: Response) => {
 
-  parcel
-    .save()
-    .then((parcel) => {
-      res.json({ message: "ok" });
-    })
-    .catch((err) => {
-      res.json({ message: "not ok" });
-    });
+ 
+  let parcels = [];
+  let company  = req.session.passport.user.name;
+
+  try{
+     parcels =  await Parcel.find().sort({'updatedAt': -1}).limit(10);
+  }catch{
+    // add error here
+  }
+
+  res.render("admin.twig", {'parcels': parcels,
+  'company': company
 });
 
-app.get("/admin", (req: Request, res: Response) => {
-  res.render("admin.twig", {});
 });
+
+
 
 mongoose.connect(process.env.MONGO_DB).then(() => console.log("Connected!"));
 

@@ -7,7 +7,6 @@ const schema = new Schema({
     type: "String",
     require: true,
     unique: true
-
   },
   history: [
     {
@@ -21,6 +20,13 @@ const schema = new Schema({
       },
     },
   ],
+  status: {
+    type: "String",
+    default: 'Delivery'
+  },
+  updatedAt: {
+    type: Date,
+  }
 });
 
 const Parcel = mongoose.model('Parcel', schema);
