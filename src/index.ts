@@ -9,23 +9,29 @@ import session from "express-session";
 import passport from "passport";
 import LocalStrategy from "passport-local";
 import auth from "./lib/middleware/auth";
+import flashMessage from "connect-flash";
+
 const app: Express = express();
 
 const port = 8000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(flashMessage());
 
 passport.use(
-  new LocalStrategy((username, password, done) => {
-    Company.findOne({ email: username, password: password })
-      .then((company) => {
-        return done(null, company);
-      })
-      .catch((err) => {
-        return done(err, false);
-      });
-  })
+  new LocalStrategy(
+    { passReqToCallback: true },
+    (req, username, password, done) => {
+      Company.findOne({ email: username, password: password })
+        .then((company) => {
+          return done(null, company);
+        })
+        .catch((err) => {
+          return done(err, false);
+        });
+    }
+  )
 );
 
 passport.serializeUser(function (user, done) {
@@ -60,7 +66,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get("/login", (req: Request, res: Response) => {
-  res.render("pages/login.twig", {});
+  res.render("pages/login.twig", { error: req.flash("error") });
 });
 
 app.post(
@@ -68,23 +74,24 @@ app.post(
   passport.authenticate("local", {
     failureRedirect: "/login",
     successRedirect: "/admin",
+    failureFlash: "Invalid username or password.",
   })
 );
 
 app.get("/register", (req: Request, res: Response) => {
-  res.render("pages/register.twig", {});
+  res.render("pages/register.twig", {'error':  req.flash('error')});
 });
 
 app.post("/register", (req: Request, res: Response) => {
-
   let company = new Company(req.body);
 
   company
     .save()
     .then((company) => {
-      res.redirect("/admin");
+      res.redirect("/login");
     })
     .catch((err) => {
+      req.flash("error", 'Username Already Taken');
       res.redirect("/register");
     });
 });
@@ -112,11 +119,10 @@ app.get("/track", async (req: Request, res: Response) => {
 });
 
 app.post("/track", (req: Request, res: Response) => {
-  
   Parcel.findOne({ reference: req.body.reference })
     .then((parcel) => {
       parcel.history.push({
-        location:  req.session.passport.user.name,
+        location: req.session.passport.user.name,
         date: new Date(),
       });
 
@@ -130,10 +136,10 @@ app.post("/track", (req: Request, res: Response) => {
       let parcel = new Parcel(req.body);
 
       parcel.history.push({
-        location:  req.session.passport.user.name,
+        location: req.session.passport.user.name,
         date: new Date(),
       });
-    
+
       parcel.updatedAt = new Date();
 
       parcel
@@ -147,9 +153,9 @@ app.post("/track", (req: Request, res: Response) => {
     });
 });
 
-// app.use(auth);
+app.use(auth);
 
-app.post("/logout", (req, res,next) => {
+app.post("/logout", (req, res, next) => {
   req.logout(function (err) {
     if (err) {
       return next(err);
@@ -158,26 +164,17 @@ app.post("/logout", (req, res,next) => {
   });
 });
 
-
 app.get("/admin", async (req: Request, res: Response) => {
-
- 
   let parcels = [];
-  let company  = req.session.passport.user.name;
 
-  try{
-     parcels =  await Parcel.find().sort({'updatedAt': -1}).limit(10);
-  }catch{
+  try {
+    parcels = await Parcel.find().sort({ updatedAt: -1 }).limit(10);
+  } catch {
     // add error here
   }
 
-  res.render("admin.twig", {'parcels': parcels,
-  'company': company
+  res.render("admin.twig", { parcels: parcels,});
 });
-
-});
-
-
 
 mongoose.connect(process.env.MONGO_DB).then(() => console.log("Connected!"));
 
